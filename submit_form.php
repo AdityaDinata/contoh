@@ -1,4 +1,14 @@
 <?php
+// Cek apakah pengguna sudah masuk ke dalam sesi login
+if (!isset($_SESSION['nik']) || !isset($_SESSION['nama_lengkap'])) {
+    // Jika tidak, redirect ke halaman login
+    header("Location: index.php");
+    exit; // Hentikan eksekusi skrip selanjutnya setelah redirect
+}
+
+?>
+
+<?php
 class Database {
     private $con;
 

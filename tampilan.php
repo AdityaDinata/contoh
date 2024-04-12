@@ -1,3 +1,35 @@
+<?php
+session_start();
+
+// Set waktu timeout dalam detik (30 menit)
+$timeout = 1800; // 30 * 60 detik
+
+// Cek apakah pengguna sudah masuk ke dalam sesi login
+if (!isset($_SESSION['nik']) || !isset($_SESSION['nama_lengkap'])) {
+    // Jika tidak, redirect ke halaman login
+    header("Location: index.php");
+    exit; // Hentikan eksekusi skrip selanjutnya setelah redirect
+}
+
+// Cek apakah waktu sesi telah berakhir
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $timeout) {
+    // Jika ya, hapus semua data sesi
+    session_unset();
+    session_destroy();
+    // Redirect ke halaman login
+    header("Location: index.php");
+    exit;
+}
+
+// Perbarui waktu aktivitas terakhir
+$_SESSION['last_activity'] = time();
+
+
+// Set cookie untuk memeriksa apakah browser masih terbuka
+setcookie('browser_status', 'open', time() + $timeout, "/"); // Cookie berlaku selama waktu sesi
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -28,7 +60,7 @@ $db = new Database();
 $data_gambar = $db->getAllData();
 
 // Koneksi ke database
-$con = mysqli_connect("localhost", "root", "", "costume_maker");
+$con = mysqli_connect("sql104.infinityfree.com", "if0_36349965", "Sela1234567890", "if0_36349965_costum");
 
 // Periksa koneksi
 if (mysqli_connect_errno()) {
@@ -55,7 +87,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
         <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
             <div class="container">
-                <a class="navbar-brand" href="#page-top"><img src="assets/img/LOGO.png " alt="..." /></a>
+                <a class="navbar-brand" href="#page-top"><img src="assets/img/logo.png " alt="..." /></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                     Menu
                     <i class="fas fa-bars ms-1"></i>
@@ -122,7 +154,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             </div>
         </section>
         <!-- Portfolio Grid-->
-        <section class="page-section bg-light" id="more">
+<section class="page-section bg-light" id="more">
     <div class="container">
         <div class="text-center">
             <h2 class="section-heading text-uppercase">More Costume</h2>
@@ -131,7 +163,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         <div class="row">
             <?php
             // Koneksi ke database
-            $con = mysqli_connect("localhost", "root", "", "costume_maker");
+            $con = mysqli_connect("sql104.infinityfree.com", "if0_36349965", "Sela1234567890", "if0_36349965_costum");
 
             // Periksa koneksi
             if (mysqli_connect_errno()) {
@@ -150,7 +182,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                     $nama_karakter = $row['Nama_Karakter'];
                     $asal = $row['asal'];
                     $foto = $row['foto'];
-                    ?>
+            ?>
                     <div class="col-lg-4 col-sm-6 mb-4">
                         <!-- Portfolio item -->
                         <div class="portfolio-item">
@@ -162,15 +194,16 @@ while ($row = mysqli_fetch_assoc($result)) {
                                 <br>
                                 <br>
                                 <br>
+                                <br>
                                 <img class="img-fluid" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="..." />
                             </a>
-                            <div class="portfolio-caption">
+                            <div  class="portfolio-caption">
                                 <div class="portfolio-caption-heading"><?php echo $nama_karakter; ?></div>
                                 <div class="portfolio-caption-subheading text-muted"><?php echo $asal; ?></div>
                             </div>
                         </div>
                     </div>
-                <?php
+            <?php
                 }
             } else {
                 // Jika tidak ada gambar yang ditemukan, tampilkan pesan
@@ -183,7 +216,6 @@ while ($row = mysqli_fetch_assoc($result)) {
         </div>
     </div>
 </section>
-
         <section class="page-section bg-light" id="team">
             <div class="container">
                 <div class="text-center1">
@@ -208,7 +240,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         </section>
         <!-- Clients-->
         <!-- Contact-->
-        <section class="page-section1" id="contact">
+<section class="page-section1" id="contact">
     <div class="container">
         <div class="bg">
             <div class="text-center1">
@@ -277,196 +309,67 @@ while ($row = mysqli_fetch_assoc($result)) {
         </footer>
         <!-- Portfolio Modals-->
         <!-- Portfolio item 1 modal popup-->
-        <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="close-modal" data-bs-dismiss="modal"><img src="assets/img/close-icon.svg" alt="Close modal" /></div>
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <div class="modal-body">
-                                    <!-- Project details-->
-        
-                                    <h2 class="text-uppercase">VinsMoke Sanji</h2>
-                                    <br>
-                                    <br>
-                                    <br>
-                                    <br>
-                                    <p class="item-intro text-muted">One Piece</p>
-                                    <img class="img-fluid d-block mx-auto" src="assets/img/portfolio/1.jpg" alt="..." />
-                                    <p>Price = 100K/3Hari</p>
-                                    <p>Waktu Pembuatan = 1 bulan</p>
-                                    <p>ukuran = XL </p>
-                                    <P>Bahan = katun</P>
-                                    
-                
-                                    <button class="btn btn-primary btn-xl text-uppercase" data-bs-dismiss="modal" type="button">
-                                        <i class="fas fa-xmark me-1"></i>
-                                        Close
-                                    </button>
-                                </div>
+        <?php
+$database = new Database();
+$data = $database->getAllData();
+foreach ($data as $row) {
+    $id = $row['id'];
+    $nama_karakter = $row['Nama_Karakter'];
+    $asal = $row['asal'];
+    $foto = $row['foto'];
+    $harga = $row['harga']; // Mengambil harga dari database
+    $waktu_pembuatan = $row['waktu_pembuatan']; // Mengambil waktu pembuatan dari database
+    $ukuran = $row['ukuran']; // Mengambil ukuran dari database
+    $bahan = $row['bahan']; // Mengambil bahan dari database
+
+    // Konten modal
+    ?>
+    <div class="portfolio-modal modal fade" id="portfolioModal<?php echo $id; ?>" tabindex="-1" role="dialog" aria-hidden="true">
+        <!-- Struktur modal -->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="close-modal" data-bs-dismiss="modal"><img src="assets/img/close-icon.svg" alt="Close modal" /></div>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="modal-body">
+                                <!-- Informasi karakter -->
+                                <h2 class="text-uppercase"><?php echo $nama_karakter; ?></h2>
+                                <br>
+                                <br>
+                                <br>
+                                <br>
+                                <p class="item-intro text-muted"><?php echo $asal; ?></p>
+                                <img class="img-fluid d-block mx-auto" src="data:image/jpeg;base64,<?php echo base64_encode($foto); ?>" alt="..." />
+                                <!-- Informasi tambahan -->
+                                <p>Harga: <?php echo $harga; ?></p>
+                                <p>Waktu Pembuatan: <?php echo $waktu_pembuatan; ?></p>
+                                <p>Ukuran: <?php echo $ukuran; ?></p>
+                                <p>Bahan: <?php echo $bahan; ?></p>
+                                <!-- Tombol Tutup -->
+                                <button class="btn btn-primary btn-xl text-uppercase" data-bs-dismiss="modal" type="button">
+                                    <i class="fas fa-xmark me-1"></i>
+                                    Close
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="portfolio-modal modal fade" id="portfolioModal2" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="close-modal" data-bs-dismiss="modal"><img src="assets/img/close-icon.svg" alt="Close modal" /></div>
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <div class="modal-body">
-                                    <!-- Project details-->
-                                    <h2 class="text-uppercase">Monkey.D.Luffy</h2>
-                                    <br>
-                                    <br>
-                                    <br>
-                                    <img class="img-fluid d-block mx-auto" src="assets/img/portfolio/2.jpg" alt="..." />
-                                    <p>Price = 100K/3Hari</p>
-                                    <p>Ukuran = XL</p>
-                                    <P>Acc = Full</P>
-                                    <button class="btn btn-primary btn-xl text-uppercase" data-bs-dismiss="modal" type="button">
-                                        <i class="fas fa-xmark me-1"></i>
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Portfolio item 3 modal popup-->
-        <div class="portfolio-modal modal fade" id="portfolioModal3" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="close-modal" data-bs-dismiss="modal"><img src="assets/img/close-icon.svg" alt="Close modal" /></div>
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <div class="modal-body">
-                                    <!-- Project details-->
-                                    <h2 class="text-uppercase">Roronoa Zoro</h2>
-                                    <br>
-                                    <br>
-                                    <br>
-                                    <img class="img-fluid d-block mx-auto" src="assets/img/portfolio/3.jpg" alt="..." />
-                                    <p>Price = 100K/3Hari</p>
-                                    <p>Ukuran = XL</p>
-                                    <P>Acc = Full</P>
-                                    <button class="btn btn-primary btn-xl text-uppercase" data-bs-dismiss="modal" type="button">
-                                        <i class="fas fa-xmark me-1"></i>
-                                        Close 
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Portfolio item 4 modal popup-->
-        <div class="portfolio-modal modal fade" id="portfolioModal4" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="close-modal" data-bs-dismiss="modal"><img src="assets/img/close-icon.svg" alt="Close modal" /></div>
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <div class="modal-body">
-                                    <!-- Project details-->
-                                    <h2 class="text-uppercase">Nico Robin</h2>
-                                    <br>
-                                    <br>
-                                    <br>
-                                    <img class="img-fluid d-block mx-auto" src="assets/img/portfolio/4.jpg" alt="..." />
-                                    <p>Price = 100K/3Hari</p>
-                                    <p>Ukuran = XL</p>
-                                    <P>Acc = Full</P>
-                                    <button class="btn btn-primary btn-xl text-uppercase" data-bs-dismiss="modal" type="button">
-                                        <i class="fas fa-xmark me-1"></i>
-                                        Close 
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Portfolio item 5 modal popup-->
-        <div class="portfolio-modal modal fade" id="portfolioModal5" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="close-modal" data-bs-dismiss="modal"><img src="assets/img/close-icon.svg" alt="Close modal" /></div>
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <div class="modal-body">
-                                    <!-- Project details-->
-                                    <h2 class="text-uppercase">Project Name</h2>
-                                    <p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
-                                    <img class="img-fluid d-block mx-auto" src="assets/img/portfolio/5.jpg" alt="..." />
-                                    <p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
-                                    <ul class="list-inline">
-                                        <li>
-                                            <strong>Client:</strong>
-                                            Southwest
-                                        </li>
-                                        <li>
-                                            <strong>Category:</strong>
-                                            Website Design
-                                        </li>
-                                    </ul>
-                                    <button class="btn btn-primary btn-xl text-uppercase" data-bs-dismiss="modal" type="button">
-                                        <i class="fas fa-xmark me-1"></i>
-                                        Close Project
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Portfolio item 6 modal popup-->
-        <div class="portfolio-modal modal fade" id="portfolioModal6" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="close-modal" data-bs-dismiss="modal"><img src="assets/img/close-icon.svg" alt="Close modal" /></div>
-                    <div class="container">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <div class="modal-body">
-                                    <!-- Project details-->
-                                    <h2 class="text-uppercase">Project Name</h2>
-                                    <p class="item-intro text-muted">Lorem ipsum dolor sit amet consectetur.</p>
-                                    <img class="img-fluid d-block mx-auto" src="assets/img/portfolio/6.jpg" alt="..." />
-                                    <p>Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!</p>
-                                    <ul class="list-inline">
-                                        <li>
-                                            <strong>Client:</strong>
-                                            Window
-                                        </li>
-                                        <li>
-                                            <strong>Category:</strong>
-                                            Photography
-                                        </li>
-                                    </ul>
-                                    <button class="btn btn-primary btn-xl text-uppercase" data-bs-dismiss="modal" type="button">
-                                        <i class="fas fa-xmark me-1"></i>
-                                        Close Project
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    </div>
+<?php } ?>
+
+
+        <script>
+        // Fungsi untuk memperbarui waktu aktivitas setiap 5 detik
+        setInterval(function() {
+            // Kirim permintaan AJAX ke server untuk memperbarui sesi
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "update_session.php", true);
+            xhr.send();
+        }, 5000); // Setiap 5 detik
+        </script>
         <!-- Portfolio item 2 modal popup-->
         <!--  -->
         <!-- Bootstrap core JS-->
